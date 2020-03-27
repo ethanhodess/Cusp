@@ -2,22 +2,54 @@ LINE ADDR CONTENTS SOURCE LINE
   1.              	.EQU KEYBOARD_STATUS, $000
   2.              	.EQU KEYBOARD_DATA, $001
   3.              
-  4.              
-  5.  000 010000  	LDX# 0
-  6.              
-  7.  001 210010  loop:	CMX# $010
-  8.  002 4B200A  	JGE end
+  4.              	.EQU @, $050
+  5.  050 676574  STRING:	.CHAR 'get', STR_LEN
+  6.  051 000000  COMPARE:	.WORD 0
+  7.  052 000000  smallindex:	.WORD 0
+  8.  053 000000  bigindex:	.WORD 0
   9.              
- 10.  003 702000  POLL_KEYBD:	INB KEYBOARD_STATUS
- 11.  004 FFF038  	NOP
- 12.  005 4B2003  	JGE POLL_KEYBD
- 13.  006 702001  	INB KEYBOARD_DATA
- 14.  007 044D00  	STA+ $D00
- 15.  008 110001  	ADX# 1
- 16.  009 402001  	JMP loop
- 17.  00A FFFFFF  end:	HLT
+ 10.              	.EQU @, $000
+ 11.              
+ 12.  000 030D00  	LDF# $D00
+ 13.  001 010000  	LDX# 0
+ 14.              
+ 15.              ;loop:	CMX# $010
+ 16.              ;	JGE end
+ 17.              
+ 18.  002 702000  POLL_KEYBD:	INB KEYBOARD_STATUS
+ 19.  003 FFF038  	NOP
+ 20.  004 4B2002  	JGE POLL_KEYBD
+ 21.  005 702001  	INB KEYBOARD_DATA
+ 22.  006 512D00  	STC $D00
+ 23.              	
+ 24.              
+ 25.              
+ 26.  007 110001  	ADX# 1
+ 27.  008 402002  	JMP POLL_KEYBD
+ 28.              
+ 29.              
+ 30.              
+ 31.              
+ 32.  009 150003  	SBX# $003
+ 33.  00A 052053  	STX bigindex
+ 34.  00B 012052  	LDX smallindex
+ 35.  00C 210003  check:	CMX# $003
+ 36.  00D 502050  	LDC STRING
+ 37.  00E 512051  	STC COMPARE
+ 38.  00F 012052  	LDX smallindex
+ 39.  010 502050  	LDC STRING
+ 40.  011 202051  	CMA COMPARE
+ 41.  012 48200C  	JEQ check
+ 42.  013 402002  	JMP POLL_KEYBD
+ 43.              	
+ 44.              	
+ 45.  014 FFFFFF  end:	HLT	
+ 46.              	
+ 47.              	
 
                      SYMBOL TABLE CONTENTS
 
-00000A = END             000001 = KEYBOARD_DATA   000000 = KEYBOARD_STATUS 
-000001 = LOOP            000003 = POLL_KEYBD      
+000053 = BIGINDEX        00000C = CHECK           000051 = COMPARE         
+000014 = END             000001 = KEYBOARD_DATA   000000 = KEYBOARD_STATUS 
+000002 = POLL_KEYBD      000052 = SMALLINDEX      000050 = STRING          
+000003 = STR_LEN         

@@ -1,17 +1,47 @@
 	.EQU KEYBOARD_STATUS, $000
 	.EQU KEYBOARD_DATA, $001
 
+	.EQU @, $050
+STRING:	.CHAR 'get', STR_LEN
+COMPARE:	.WORD 0
+smallindex:	.WORD 0
+bigindex:	.WORD 0
 
+	.EQU @, $000
+
+	LDF# $D00
 	LDX# 0
 
-loop:	CMX# $010
-	JGE end
+;loop:	CMX# $010
+;	JGE end
 
 POLL_KEYBD:	INB KEYBOARD_STATUS
 	NOP
 	JGE POLL_KEYBD
 	INB KEYBOARD_DATA
-	STA+ $D00
+	STC $D00
+	
+
+
 	ADX# 1
-	JMP loop
-end:	HLT
+	JMP POLL_KEYBD
+
+
+
+
+	SBX# $003
+	STX bigindex
+	LDX smallindex
+check:	CMX# $003
+	LDC STRING
+	STC COMPARE
+	LDX smallindex
+	LDC STRING
+	CMA COMPARE
+	JEQ check
+	JMP POLL_KEYBD
+	
+	
+end:	HLT	
+	
+	
